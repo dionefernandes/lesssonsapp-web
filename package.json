@@ -12,11 +12,6 @@
     "class"
   ],
   "author": "Dione Rodrigues Fernandes",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://https://github.com/dionefernandes/lesssonsapp-web/issues"
-  },
-  "homepage": "https://https://github.com/dionefernandes/lesssonsapp-web#readme",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

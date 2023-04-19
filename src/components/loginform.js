@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Form, Input, Button, Error } from '../styles/loginform';
+import authService from '../services/auth';
 
 export default function LoginForm () {
   const [username, setUsername] = useState('');
@@ -13,6 +14,27 @@ export default function LoginForm () {
     if (!username || !password) {
       setError('You need to provide the username and password.');
     } else {
+      const token = await authService.authenticate(username, password);
+      
+      if(token.message) {
+        setError(token.message);
+        return false;
+      }
+
+      const validate = await authService.tokenValidate(token)
+      
+      if(validate.message) {
+        setError(validate.message);
+        return false;
+      }
+
+      const setLogged = authService.setLogged(username, token);
+
+      if(setLogged && setLogged.message) {
+        setError(setLogged.message);
+        return false;
+      }
+
       window.location.href = '/lessons';
     }
   }
