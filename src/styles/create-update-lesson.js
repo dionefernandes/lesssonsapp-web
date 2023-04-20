@@ -58,11 +58,16 @@ export const Form = styled.form`
   flex-direction: column;
 `;
 
+export const Label = styled.div`
+  color: #444;
+  padding: 8px 0px;
+`;
+
 export const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 
   &:focus {
     outline: none;
@@ -74,7 +79,7 @@ export const TextArea = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   height: 120px;
   resize: vertical;
 
@@ -87,31 +92,41 @@ export const TextArea = styled.textarea`
 export const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
+  margin-top: 30px;
 `;
 
 export const SaveButton = styled.button`
-  background-color: #0077ff;
-  color: #fff;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  background-color: #0077cc;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 5px;
+  margin-right: 10px;
+  transition: background-color 0.2s ease-in-out;
   cursor: pointer;
-  margin-right: 8px;
+
+  &:hover {
+    background-color: #0099dd;
+  }
 `;
 
 export const CancelButton = styled.button`
   background-color: #ccc;
   color: #333;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 17px;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #999;
+  }
 `;
 
 export const Message = styled.span`

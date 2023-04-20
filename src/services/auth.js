@@ -8,10 +8,14 @@ const authService = {
     const checkServer = await this.checkServer();
 
     if(checkServer) {
-      const authEndpoint = `${apiUrl}lessons/auth`;
-      const response = await axios.post(authEndpoint, { username, password });
-      
-      return response.data.createdToken;
+      try {
+        const authEndpoint = `${apiUrl}lessons/auth`;
+        const response = await axios.post(authEndpoint, { username, password });
+        
+        return response.data.createdToken;
+      } catch(error) {
+        return { message: `Username or password is invalid!` };
+      }
     }
 
     return { message: 'Server is not available.' };
@@ -86,9 +90,23 @@ const authService = {
   },
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    // localStorage.removeItem('token');
+    // localStorage.removeItem('username');
+
+    localStorage.clear();
+    window.location.href = '/';
   },
+
+  isAuthenticated() {
+    const { token } = authService.getLogged();
+
+    if(token === null) {
+      authService.logout();
+      return false;
+    }
+
+    return true;
+  }
 }
 
 export default authService;

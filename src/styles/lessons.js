@@ -43,32 +43,29 @@ export const SearchInput = styled.input`
   }
 `;
 
-export const SearchButton = styled.button`
+export const SearchResetBtn = styled.button`
   background-color: #0077ff;
   color: #fff;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 1px outset #fff;
   cursor: pointer;
 `;
 
 export const NewLessonButton = styled.button`
   background-color: #0077ff;
   color: #fff;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 10px 18px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
   
-  a {
-    color: #fff;
-    text-decoration: none;
+  &:hover {
+    background-color: #09d;
   }
 `;
 
@@ -98,45 +95,36 @@ export const ActionButtonsContainer = styled.div`
 export const ViewButton = styled.button`
   background-color: #090;
   color: #fff;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 6.5px;
   border: none;
   cursor: pointer;
 
-  a {
-    color: #fff;
+  &:hover {
+    color: #DDD;
   }
 `;
 
 export const EditButton = styled.button`
   background-color: #0077ff;
   color: #fff;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 6.5px;
   border: none;
   cursor: pointer;
 
-  a {
-    color: #fff;
+  &:hover {
+    color: #DDD;
   }
 `;
 
 export const DeleteButton = styled.button`
   background-color: #ff4d4d;
   color: #fff;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 6.5px;
   border: none;
   cursor: pointer;
 
-  a {
-    color: #fff;
+  &:hover {
+    color: #DDD;
   }
 `;
 
@@ -148,19 +136,23 @@ export const TableRow = styled.tr`
   }
 `;
 
-export const ExpiredTokensLink = styled.a`
+export const ExpiredTokensLink = styled.div`
   margin-top: 24px;
   color: #0077ff;
   font-size: 16px;
-  text-decoration: none;
   cursor: pointer;
 
   a {
     color: #0077ff;
     text-decoration: none;
   }
-
-  a:hover {
+  
+  &:hover {
     text-decoration: underline;
   }
+`;
+
+export const Error = styled.span`
+  color: #ff0000;
+  margin: 20px auto;
 `;

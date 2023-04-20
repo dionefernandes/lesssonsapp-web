@@ -57,7 +57,7 @@ export const ContentImage = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;  
+  margin-bottom: 50px;
 `;
 
 export const LessonImage = styled.img`
@@ -98,7 +98,7 @@ export const ButtonGroup = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 60px;
 `;
 
 export const EditButton = styled.button`
@@ -106,7 +106,7 @@ export const EditButton = styled.button`
   border: none;
   background-color: #0077cc;
   color: #fff;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   border-radius: 5px;
   margin-right: 10px;
@@ -123,7 +123,7 @@ export const DeleteButton = styled.button`
   border: none;
   background-color: #f33;
   color: #fff;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   border-radius: 5px;
   margin-right: 10px;
@@ -131,7 +131,7 @@ export const DeleteButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #f44;
+    background-color: #f55;
   }
 `;
 
@@ -140,7 +140,7 @@ export const CancelButton = styled.button`
   border: none;
   background-color: #666;
   color: #fff;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   border-radius: 5px;
   margin-right: 10px;
@@ -148,7 +148,7 @@ export const CancelButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #888;
+    background-color: #999;
   }
 `;
 
@@ -173,4 +173,17 @@ export const Warning = styled.div`
     font-size: 24px;
     width: 100%;
   }
+`;
+
+export const Error = styled.span`
+  color: #ff0000;
+  margin-top: 15px;
+`;
+
+export const Success = styled.div`
+  color: #060;
+  display: block;
+  margin-top: 15px;
+  text-align: center;
+  width: 100%;
 `;

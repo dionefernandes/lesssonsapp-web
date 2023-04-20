@@ -30,3 +30,19 @@ export const Title = styled.h1`
     font-size: 20px;
   }
 `;
+
+export const Hellouser = styled.div`
+  color: #fff;
+  margin-left: auto;
+
+  a {
+    color: #fff;
+    margin-left: 5px;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: #DDD;
+    text-decoration: underline;
+  }
+`;

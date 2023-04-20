@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+
+import authService from '../services/auth';
+import api from '../services/api';
 import Header from '../components/header';
 import Footer from '../components/footer';
 import {
@@ -8,6 +11,7 @@ import {
   Content,
   Title,
   Form,
+  Label,
   Input,
   TextArea,
   ButtonGroup,
@@ -24,30 +28,41 @@ const UpdateLesson = () => {
     title: '',
     description: '',
     duration: '',
-    teacher: '',
-    imgLink: '',
+    Teacher: '',
+    ImgLink: '',
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [lesson, setLesson] = useState(null);
 
   useEffect(() => {
-    // Fetch lesson data by ID from the server and set it in the state
-    const fetchLessonData = async () => {
+    const valid = async () => {
+      const valid = await api.isTokenValid();
+
+      if(!valid.status === 200) {
+        window.location.href = '/';
+        return false;
+      }
+    }
+    
+    const getLesson = async () => {
       try {
-        const response = await fetch(`/api/lessons/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch lesson data from server.');
-        }
-        const data = await response.json();
-        setFormData(data);
+        const response = await api.lessonById(id);
+        const lesson = response.data;
+        setLesson(lesson);
+        setFormData(lesson);
       } catch (error) {
-        console.error(error);
-        setError('Failed to fetch lesson data from server.');
+        setError('Lesson not found!');
       }
     };
-    fetchLessonData();
+    
+    valid();
+    getLesson();
   }, [id]);
 
+  if( !authService.isAuthenticated() )
+    return false;
+  
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -55,25 +70,22 @@ const UpdateLesson = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
+  
+    if (!formData.title || formData.title === '') {
+      setError('* Enter the title of the lesson.');
+    } else if (!formData.duration || formData.duration === '') {
+      setError('* Enter the duration of the lesson.');
+    } else if (!formData.Teacher || formData.Teacher === '') {
+      setError('* Enter the teacher name of the lesson.');
+    } else {
+      setError('');
 
-    try {
-      const response = await fetch(`/api/lessons/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update lesson data.');
+      try {
+        await api.updateLesson(formData, id);
+        setMessage('The new lesson has been successfully saved!');
+      } catch(error) {
+        console.log(error);
       }
-
-      setMessage('The lesson has been successfully updated!');
-    } catch (error) {
-      console.error(error);
-      setError('Failed to update lesson data.');
     }
   };
 
@@ -89,52 +101,65 @@ const UpdateLesson = () => {
       <Container>
         <Title>Update Lesson</Title>
         <Content>
-          <Form onSubmit={handleSubmit}>
-            <Input
-              type="text"
-              placeholder="* Lesson Title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-            />
-            <TextArea
-              placeholder="Lesson Description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-            />
-            <Input
-              type="text"
-              placeholder="* Duration (in minutes)"
-              name="duration"
-              value={formData.duration}
-              onChange={handleInputChange}
-            />
-            <Input
-              type="text"
-              placeholder="* Teacher name"
-              name="teacher"
-              value={formData.teacher}
-              onChange={handleInputChange}
-            />
-            <Input
-              type="text"
-              placeholder="Image Link"
-              name="imgLink"
-              value={formData.imgLink}
-              onChange={handleInputChange}
-            />
-            <ButtonGroup>
-              <SaveButton type="submit">Update</SaveButton>
+          {lesson ? (
+            <>
+              <Form onSubmit={handleSubmit}>
+                <Label>Lesson title</Label>
+                <Input
+                  type="text"
+                  placeholder="* Lesson Title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                />
+                <Label>Lesson description</Label>
+                <TextArea
+                  placeholder="Lesson Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                />
+                <Label>Duration</Label>
+                <Input
+                  type="text"
+                  placeholder="* Duration (in minutes)"
+                  name="duration"
+                  value={formData.duration}
+                  onChange={handleInputChange}
+                />
+                <Label>Teacher name</Label>
+                <Input
+                  type="text"
+                  placeholder="* Teacher name"
+                  name="Teacher"
+                  value={formData.Teacher}
+                  onChange={handleInputChange}
+                />
+                <Label>Image Link</Label>
+                <Input
+                  type="text"
+                  placeholder="Image Link"
+                  name="ImgLink"
+                  value={formData.ImgLink}
+                  onChange={handleInputChange}
+                />
+                {error && <Error>{error}</Error>}
+                {message && <Message>{message}</Message>}
+                <ButtonGroup>
+                  <SaveButton type="submit">Update</SaveButton>
 
-              <Link to="/lessons">
-                <CancelButton>Cancel</CancelButton>
-              </Link>
-            </ButtonGroup>
-            {error && <Error>{error}</Error>}
-
-            {message && <Message>{message}</Message>}
-          </Form>
+                  <Link to="/lessons">
+                    <CancelButton>Cancel</CancelButton>
+                  </Link>
+                </ButtonGroup>
+              </Form>
+            </>
+          ) : (
+            <>
+              {error && <Error>{error}</Error>}
+              <p>Loading...</p>
+            </>
+          )}
         </Content>
       </Container>
       <Footer />

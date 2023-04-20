@@ -35,6 +35,15 @@ export default function LoginForm () {
         return false;
       }
 
+      const getLogged = authService.getLogged();
+
+      if(getLogged.message) {
+        setError(getLogged.message);
+        return false;
+      } else {
+        console.log(getLogged.token, getLogged.username);
+      }
+
       window.location.href = '/lessons';
     }
   }

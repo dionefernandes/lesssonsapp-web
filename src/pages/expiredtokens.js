@@ -1,5 +1,9 @@
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+
+import authService from '../services/auth';
+import api from '../services/api';
 import Header from '../components/header';
 import Footer from '../components/footer';
 import {
@@ -11,13 +15,31 @@ import {
   DeleteButton,
   CancelButton,
   Navigation,
+  Success
 } from '../styles/viewlesson';
 
 const ExpiredToken = () => {
-  const { id } = useParams();
+  const [success, setSuccess] = useState('');
 
-  const handleDeleteClick = () => {
-    window.location.href = `/deletelesson/${id}`;
+  useEffect(() => {
+    const valid = async () => {
+      const valid = await api.isTokenValid();
+
+      if(!valid.status === 200) {
+        window.location.href = '/';
+        return false;
+      }
+    }
+    
+    valid();
+  }, []);
+
+  if( !authService.isAuthenticated() )
+    return false;
+
+  const handleDeleteClick = async () => {
+    setSuccess('Expired tokens have been deleted successfully!');
+    await api.expiredTokens();
   };
 
   return (
@@ -37,6 +59,7 @@ const ExpiredToken = () => {
               <div>Caution!</div>
               Do you really want to delete expired tokens from the system?
             </Warning>
+            {success && <Success>{success}</Success>}
             <ButtonGroup>
               <DeleteButton onClick={handleDeleteClick}>Confirm delete</DeleteButton>
               <Link to="/lessons">

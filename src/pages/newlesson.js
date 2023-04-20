@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+
+import authService from '../services/auth';
+import api from '../services/api';
 import Header from '../components/header';
 import Footer from '../components/footer';
 import {
@@ -8,6 +11,7 @@ import {
   Content,
   Title,
   Form,
+  Label,
   Input,
   TextArea,
   ButtonGroup,
@@ -23,33 +27,51 @@ const NewLesson = () => {
     title: '',
     description: '',
     duration: '',
-    teacher: '',
-    imgLink: '',
+    Teacher: '',
+    ImgLink: '',
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const valid = async () => {
+      const valid = await api.isTokenValid();
+
+      if(!valid.status === 200) {
+        window.location.href = '/';
+        return false;
+      }
+    }
+    
+    valid();
+  }, []);
+
+  if( !authService.isAuthenticated() )
+    return false;
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(formData);
-
+  const handleSubmit = async (event) => {
     event.preventDefault();
   
     if (!formData.title || formData.title === '') {
       setError('* Enter the title of the lesson.');
     } else if (!formData.duration || formData.duration === '') {
       setError('* Enter the duration of the lesson.');
-    } else if (!formData.teacher || formData.teacher === '') {
+    } else if (!formData.Teacher || formData.Teacher === '') {
       setError('* Enter the teacher name of the lesson.');
     } else {
       setError('');
-      setMessage('The new lesson has been successfully saved!');
-      console.log(formData);
+
+      try {
+        await api.createLesson(formData);
+        setMessage('The new lesson has been successfully saved!');
+      } catch(error) {
+        console.log(error);
+      }
     }
   };
 
@@ -66,6 +88,7 @@ const NewLesson = () => {
         <Title>New Lesson</Title>
         <Content>
           <Form onSubmit={handleSubmit}>
+            <Label>Lesson title</Label>
             <Input
               type="text"
               placeholder="* Lesson Title"
@@ -73,12 +96,14 @@ const NewLesson = () => {
               value={formData.title}
               onChange={handleInputChange}
             />
+            <Label>Lesson description</Label>
             <TextArea
               placeholder="Lesson Description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
             />
+            <Label>Duration</Label>
             <Input
               type="text"
               placeholder="* Duration (in minutes)"
@@ -86,20 +111,24 @@ const NewLesson = () => {
               value={formData.duration}
               onChange={handleInputChange}
             />
+            <Label>Teacher name</Label>
             <Input
               type="text"
               placeholder="* Teacher name"
-              name="teacher"
-              value={formData.teacher}
+              name="Teacher"
+              value={formData.Teacher}
               onChange={handleInputChange}
             />
+            <Label>Image Link</Label>
             <Input
               type="text"
               placeholder="Image Link"
-              name="imgLink"
-              value={formData.imgLink}
+              name="ImgLink"
+              value={formData.ImgLink}
               onChange={handleInputChange}
             />
+            {error && <Error>{error}</Error>}
+            {message && <Message>{message}</Message>}
             <ButtonGroup>
               <SaveButton type="submit">Save</SaveButton>
 
@@ -107,8 +136,6 @@ const NewLesson = () => {
                 <CancelButton>Cancel</CancelButton>
               </Link>
             </ButtonGroup>
-            {error && <Error>{error}</Error>}
-            {message && <Message>{message}</Message>}
           </Form>
         </Content>
       </Container>

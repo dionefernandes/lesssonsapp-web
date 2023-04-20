@@ -1,17 +1,18 @@
-import React from 'react';
-import { FaSearch, FaPlus, FaEdit, FaTrashAlt, FaEye } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaSearch, FaPlus, FaEdit, FaTrashAlt, FaEye, FaUndo } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
+import authService from '../services/auth';
+import api from '../services/api';
 import Header from '../components/header';
 import Footer from '../components/footer';
-
 import {
   LessonsListContainer,
   LessonsListHeader,
   LessonsListTitle,
   SearchContainer,
   SearchInput,
-  SearchButton,
+  SearchResetBtn,
   NewLessonButton,
   LessonsTable,
   TableHeader,
@@ -22,51 +23,94 @@ import {
   DeleteButton,
   TableRow,
   ExpiredTokensLink,
+  Error,
 } from '../styles/lessons';
 
 const LessonsList = () => {
-  const lessons = [
-    {
-      id: 1,
-      title: 'Introduction to React',
-      description: 'Learn the basics of React',
-      duration: '2h',
-      teacher: 'John Doe',
-    },
-    {
-      id: 2,
-      title: 'Advanced React',
-      description: 'Learn advanced concepts of React',
-      duration: '4h',
-      teacher: 'Jane Doe',
-    },
-    {
-      id: 3,
-      title: 'React Native',
-      description: 'Learn how to build mobile apps with React Native',
-      duration: '3h',
-      teacher: 'John Smith',
-    },
-  ];
+  const [lessons, setLessons] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect( () => {
+    const valid = async () => {
+      const valid = await api.isTokenValid();
+
+      if(!valid.status === 200) {
+        window.location.href = '/';
+        return false;
+      }
+    }
+      
+    const getLessons = async () => {
+      try {
+        const response = await api.lessonsAll();
+        const allLessons = response.data;
+        setLessons(allLessons);
+      } catch (error) {
+        setError('There was a problem trying to load the lessons!');
+      }
+    };
+
+    valid();
+    getLessons();
+  }, []);
+
+  if( !authService.isAuthenticated() )
+    return false;
+
+  const handleSearch = async () => {
+    try {
+      const response = await api.lessonByTitle(searchTerm);
+      const searchedLessons = response.data;
+      setLessons(searchedLessons);
+    } catch (error) {
+      setError('There was a problem trying to load lessons by title!');
+    }
+  };
+
+  const handleSearchInput = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleReset = async () => {
+    setSearchTerm('');
+    try {
+      const response = await api.lessonsAll();
+      const allLessons = response.data;
+      setLessons(allLessons);
+    } catch (error) {
+      setError('There was a problem trying to load the lessons!');
+    }
+  };
 
   return (
     <>
       <Header />
       <LessonsListContainer>
         <LessonsListTitle>Lessons List</LessonsListTitle>
+        {error && <Error>{error}</Error>}
         <LessonsListHeader>
           <SearchContainer>
-            <SearchInput type="text" placeholder="Search lessons" />
-            <SearchButton>
+          <SearchInput type="text" placeholder="Search lessons" onChange={handleSearchInput} onKeyPress={ (e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }
+            }
+          />
+            <SearchResetBtn onClick={handleSearch}>
               <FaSearch />
-            </SearchButton>
+            </SearchResetBtn>
+            <SearchResetBtn onClick={handleReset}>
+              <FaUndo />
+            </SearchResetBtn>
           </SearchContainer>
-          <NewLessonButton>
-            <Link to={`/newLesson`}>
+          <Link to="/newLesson">
+            <NewLessonButton>
               <FaPlus />&nbsp;
               New Lesson
-            </Link>
-          </NewLessonButton>
+            </NewLessonButton>
+          </Link>
         </LessonsListHeader>
         <LessonsTable>
           <thead>
@@ -109,7 +153,7 @@ const LessonsList = () => {
           </tbody>
         </LessonsTable>
         <ExpiredTokensLink>
-          <Link to={`/expiredtokens`}>
+          <Link to="/expiredtokens">
             Click para excluir tokens expirados
           </Link>
         </ExpiredTokensLink>
